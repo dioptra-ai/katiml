@@ -1,0 +1,12 @@
+[submodule "services/frontend"]
+	path = services/frontend
+	url = git@github.com:dioptra-ai/frontend.git
+[submodule "services/metrics-engine"]
+	path = services/metrics-engine
+	url = git@github.com:dioptra-ai/metrics-engine.git
+[submodule "services/ingestion"]
+	path = services/ingestion
+	url = git@github.com:dioptra-ai/ingestion.git
+[submodule "services/task-engine"]
+	path = services/task-engine
+	url = git@github.com:dioptra-ai/task-engine.git

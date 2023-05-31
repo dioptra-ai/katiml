@@ -1,0 +1,202 @@
+version: '3.4'
+
+services:
+  mongo:
+    image: arm64v8/mongo:6.0.2
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - dioptra-net
+
+  mongo-cache:
+    image: arm64v8/mongo:6.0.2 # Matches the helm chart app version
+    restart: always
+    expose:
+      - "27017"
+    networks:
+      - dioptra-net
+
+  frontend:
+    depends_on:
+      - mongo
+      - postgres
+      - ingestion
+    build:
+      context: services/frontend
+      dockerfile: Dockerfile
+    image: frontend:latest
+    restart: always
+    env_file:
+      # Use this to override the default .env.example file with your own .env file
+      - .env.example
+    environment:
+      ENVIRONMENT: "local-dev"
+      COOKIE_DURATION_HRS: 1000
+      DB_CONNECTION_URI: "mongodb://mongo:27017/dioptra"
+      PORT: "4004"
+      INTERNAL_PORT: "4005"
+      METRICS_ENGINE_URL: "http://metrics-engine:4006"
+      TASK_ENGINE_URL: "http://task-engine:8001"
+      INGESTION_ENDPOINT: "http://ingestion:8080/2015-03-31/functions/function/invocations"
+      AWS_S3_CUSTOMER_BUCKET: "dioptra-client-data"
+      AWS_S3_CUSTOMER_BUCKET_REGION: "us-east-2"
+      AWS_INGESTION_STATE_MACHINE_ARN: arn:aws:states:us-east-2:641017132295:stateMachine:IngestionStateMachine-yexI4QkB6EnE
+
+    ports:
+      - '4004:4004'
+    networks:
+      - dioptra-net
+    volumes:
+      - ./services/frontend/docs:/app/docs
+      - ./services/frontend/src:/app/src
+      - ./services/frontend/index.mjs:/app/index.mjs
+      - ./services/frontend/webpack.config.js:/app/webpack.config.js
+      - ~/.aws:/root/.aws
+    entrypoint: npm run dev
+
+  metrics-engine:
+    depends_on:
+      - mongo-cache
+      - postgres
+    build:
+      context: services/metrics-engine
+      dockerfile: Dockerfile.arm64
+    image: metrics-engine:latest
+    restart: always
+    env_file:
+      # Use this to override the default .env.example file with your own .env file
+      - .env.example
+    environment:
+      ENVIRONMENT: "local-dev"
+      POSTGRES_ECHO: true
+      FRONTEND_URL: http://frontend:4005
+      LIMIT_EMBEDDING_QUERY: "10000"
+      MONGO_URI: "mongodb://mongo:27017/dioptra"
+      MONGO_CACHE_URI: "mongodb://mongo-cache:27017"
+      TASK_ENGINE_URL: "http://task-engine:8001"
+      PYTHONUNBUFFERED: true
+    ports:
+      - '4006:4006'
+    networks:
+      - dioptra-net
+    volumes:
+      - ./services/metrics-engine:/app
+
+  task-engine:
+    depends_on:
+      - mongo
+      - redis
+    build:
+      context: services/task-engine
+      dockerfile: Dockerfile
+    image: task-engine:latest
+    restart: always
+    env_file:
+      # Use this to override the default .env.example file with your own .env file
+      - .env.example
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      FRONTEND_URL: http://frontend:4005
+      MONGO_URI: mongodb://mongo:27017/dioptra
+      METRICS_ENGINE_URL: "http://metrics-engine:4006"
+      PYTHONUNBUFFERED: true
+    ports:
+      - "8001:8001"
+    networks:
+      - dioptra-net
+    volumes:
+      - ./services/task-engine:/app
+    entrypoint: uwsgi --ini uwsgi.ini
+
+  task-engine-worker:
+    depends_on:
+      - mongo
+      - redis
+    build:
+      context: services/task-engine
+      dockerfile: Dockerfile
+    image: task-engine:latest
+    deploy:
+      replicas: 1
+    restart: always
+    env_file:
+      # Use this to override the default .env.example file with your own .env file
+      - .env.example
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      MONGO_URI: mongodb://mongo:27017/dioptra
+      KAFKA_BOOTSTRAP_SERVER_URIS: "localhost:9092"
+      DRUID_ENDPOINT: "http://host.docker.internal:8888"
+      METRICS_ENGINE_URL: "http://metrics-engine:4006"
+      FRONTEND_URL: http://frontend:4005
+      PYTHONUNBUFFERED: true
+    networks:
+      - dioptra-net
+    volumes:
+      - ./services/task-engine:/app
+    entrypoint: celery -A worker worker --loglevel=INFO
+
+  ingestion:
+    platform: linux/amd64 # https://stackoverflow.com/questions/62807717/how-can-i-solve-postgresql-scram-authentication-problem
+    depends_on:
+      - mongo
+      - redis
+      - postgres
+    build:
+      context: services/ingestion
+      dockerfile: Dockerfile
+      target: builder
+    image: ingestion:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    env_file:
+      # Use this to override the default .env.example file with your own .env file
+      - .env.example
+    environment:
+      ENVIRONMENT: "local-dev"
+      PYTHONUNBUFFERED: true
+      POSTGRES_ECHO: true
+      AWS_LAMBDA_FUNCTION_TIMEOUT: 900
+      AWS_DEFAULT_REGION: us-west-2
+    networks:
+      - dioptra-net
+    volumes:
+      - ./services/ingestion:/app
+      - ~/.aws:/root/.aws
+
+  postgres:
+    image: postgres:14.3
+    restart: always
+    ports:
+      - "5432:5432"
+    env_file:
+      # Use this to override the default .env.example file with your own .env file
+      - .env.example
+    environment:
+      POSTGRES_DB: dioptra
+      POSTGRES_MAX_CONNECTIONS: 100
+    networks:
+      - dioptra-net
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - dioptra-net
+
+networks:
+  dioptra-net:
+    driver: bridge
+
+volumes:
+  postgres-data: {}
