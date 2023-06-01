@@ -52,6 +52,7 @@ services:
       - ./services/frontend/index.mjs:/app/index.mjs
       - ./services/frontend/webpack.config.js:/app/webpack.config.js
       - ~/.aws:/root/.aws
+      - shared-upload:/app/data-upload
     entrypoint: npm run dev
 
   metrics-engine:
@@ -164,6 +165,7 @@ services:
     volumes:
       - ./services/ingestion:/app
       - ~/.aws:/root/.aws
+      - shared-upload:/app/data-upload
 
   postgres:
     image: postgres:14.3
@@ -194,3 +196,4 @@ networks:
 
 volumes:
   postgres-data: {}
+  shared-upload:
