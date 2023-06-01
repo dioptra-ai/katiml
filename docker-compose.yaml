@@ -28,8 +28,7 @@ services:
     image: frontend:latest
     restart: always
     env_file:
-      # Use this to override the default .env.example file with your own .env file
-      - .env.example
+      - .env
     environment:
       ENVIRONMENT: "local-dev"
       COOKIE_DURATION_HRS: 1000
@@ -65,8 +64,7 @@ services:
     image: metrics-engine:latest
     restart: always
     env_file:
-      # Use this to override the default .env.example file with your own .env file
-      - .env.example
+      - .env
     environment:
       ENVIRONMENT: "local-dev"
       POSTGRES_ECHO: true
@@ -93,8 +91,7 @@ services:
     image: task-engine:latest
     restart: always
     env_file:
-      # Use this to override the default .env.example file with your own .env file
-      - .env.example
+      - .env
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -123,8 +120,7 @@ services:
       replicas: 1
     restart: always
     env_file:
-      # Use this to override the default .env.example file with your own .env file
-      - .env.example
+      - .env
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -156,8 +152,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      # Use this to override the default .env.example file with your own .env file
-      - .env.example
+      - .env
     environment:
       ENVIRONMENT: "local-dev"
       PYTHONUNBUFFERED: true
@@ -176,8 +171,7 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      # Use this to override the default .env.example file with your own .env file
-      - .env.example
+      - .env
     environment:
       POSTGRES_DB: dioptra
       POSTGRES_MAX_CONNECTIONS: 100
