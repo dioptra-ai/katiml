@@ -30,6 +30,9 @@
     virtualenv .venv && source .venv/bin/activate && pip install -r requirements.txt
     alembic upgrade head
     ```
-1. Upload the [example data](./data/sample_dataset.json) to the lake
-1. Select all datapoints and add them to a new dataset
-1. Run the embedding analysis
+1. Visit http://localhost:4004/ with the following default credentials
+    * username: `admin@dioptra.ai`
+    * password: `password`
+2. Upload the [example data](./data/sample_dataset.json) to the lake
+3. Select all datapoints and add them to a new dataset
+4. From http://localhost:4004/data-lake, Run the embedding analysis
