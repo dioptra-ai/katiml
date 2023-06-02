@@ -22,6 +22,7 @@
 1. Start all services with docker-compose
     ```bash
     cd lakeml
+    touch .env
     docker compose up --build -d
     ```
 1. If you're starting for the first time, run the schema migration
