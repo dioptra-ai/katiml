@@ -17,11 +17,11 @@
 
 1. Clone this repo
     ```bash
-    git clone --recurse-submodules git@github.com:dioptra-ai/lakeml.git
+    git clone --recurse-submodules git@github.com:dioptra-ai/katiml.git
     ```
 1. Start all services with docker-compose
     ```bash
-    cd lakeml
+    cd katiml
     touch .env
     docker compose up --build -d
     ```
