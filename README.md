@@ -23,7 +23,7 @@
     ```bash
     cd katiml
     touch .env
-    docker compose up --build -d
+    docker compose up --build
     ```
 1. If you're starting for the first time, run the schema migration
     ```bash

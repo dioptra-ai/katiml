@@ -43,6 +43,7 @@ services:
       AWS_S3_CUSTOMER_BUCKET: "dioptra-client-data"
       AWS_S3_CUSTOMER_BUCKET_REGION: "us-east-2"
       AWS_INGESTION_STATE_MACHINE_ARN: arn:aws:states:us-east-2:641017132295:stateMachine:IngestionStateMachine-yexI4QkB6EnE
+      OVERRIDE_POSTGRES_ORG_ID: 647cf6e64a781673194b7299
     ports:
       - '4004:4004'
     networks:
@@ -83,64 +84,6 @@ services:
       - dioptra-net
     volumes:
       - ./services/analytics:/app
-
-  task-engine:
-    depends_on:
-      - mongo
-      - redis
-    build:
-      context: services/task-engine
-      dockerfile: Dockerfile
-    image: task-engine:latest
-    restart: always
-    env_file:
-      - .env.example
-      - .env
-    environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ""
-      FRONTEND_URL: http://frontend:4005
-      MONGO_URI: mongodb://mongo:27017/dioptra
-      METRICS_ENGINE_URL: "http://analytics:4006"
-      PYTHONUNBUFFERED: true
-    ports:
-      - "8001:8001"
-    networks:
-      - dioptra-net
-    volumes:
-      - ./services/task-engine:/app
-    entrypoint: uwsgi --ini uwsgi.ini
-
-  task-engine-worker:
-    depends_on:
-      - mongo
-      - redis
-    build:
-      context: services/task-engine
-      dockerfile: Dockerfile
-    image: task-engine:latest
-    deploy:
-      replicas: 1
-    restart: always
-    env_file:
-      - .env.example
-      - .env
-    environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ""
-      MONGO_URI: mongodb://mongo:27017/dioptra
-      KAFKA_BOOTSTRAP_SERVER_URIS: "localhost:9092"
-      DRUID_ENDPOINT: "http://host.docker.internal:8888"
-      METRICS_ENGINE_URL: "http://analytics:4006"
-      FRONTEND_URL: http://frontend:4005
-      PYTHONUNBUFFERED: true
-    networks:
-      - dioptra-net
-    volumes:
-      - ./services/task-engine:/app
-    entrypoint: celery -A worker worker --loglevel=INFO
 
   ingestion:
     platform: linux/amd64 # https://stackoverflow.com/questions/62807717/how-can-i-solve-postgresql-scram-authentication-problem

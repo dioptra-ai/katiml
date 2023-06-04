@@ -4,9 +4,6 @@
 [submodule "services/ingestion"]
 	path = services/ingestion
 	url = git@github.com:dioptra-ai/ingestion.git
-[submodule "services/task-engine"]
-	path = services/task-engine
-	url = git@github.com:dioptra-ai/task-engine.git
 [submodule "services/analytics"]
 	path = services/analytics
 	url = git@github.com:dioptra-ai/analytics.git
