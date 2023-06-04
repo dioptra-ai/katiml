@@ -28,6 +28,7 @@ services:
     image: frontend:latest
     restart: always
     env_file:
+      - .env.example
       - .env
     environment:
       ENVIRONMENT: "local-dev"
@@ -36,12 +37,12 @@ services:
       PORT: "4004"
       INTERNAL_PORT: "4005"
       METRICS_ENGINE_URL: "http://metrics-engine:4006"
+      ANALYTICS_ENGINE_URL: "http://analytics:4006"
       TASK_ENGINE_URL: "http://task-engine:8001"
       INGESTION_ENDPOINT: "http://ingestion:8080/2015-03-31/functions/function/invocations"
       AWS_S3_CUSTOMER_BUCKET: "dioptra-client-data"
       AWS_S3_CUSTOMER_BUCKET_REGION: "us-east-2"
       AWS_INGESTION_STATE_MACHINE_ARN: arn:aws:states:us-east-2:641017132295:stateMachine:IngestionStateMachine-yexI4QkB6EnE
-
     ports:
       - '4004:4004'
     networks:
@@ -55,16 +56,17 @@ services:
       - shared-upload:/app/data-upload
     entrypoint: npm run dev
 
-  metrics-engine:
+  analytics:
     depends_on:
       - mongo-cache
       - postgres
     build:
-      context: services/metrics-engine
-      dockerfile: Dockerfile.arm64
-    image: metrics-engine:latest
+      context: services/analytics
+      dockerfile: Dockerfile
+    image: analytics:latest
     restart: always
     env_file:
+      - .env.example
       - .env
     environment:
       ENVIRONMENT: "local-dev"
@@ -80,7 +82,7 @@ services:
     networks:
       - dioptra-net
     volumes:
-      - ./services/metrics-engine:/app
+      - ./services/analytics:/app
 
   task-engine:
     depends_on:
@@ -92,6 +94,7 @@ services:
     image: task-engine:latest
     restart: always
     env_file:
+      - .env.example
       - .env
     environment:
       REDIS_HOST: redis
@@ -99,7 +102,7 @@ services:
       REDIS_PASSWORD: ""
       FRONTEND_URL: http://frontend:4005
       MONGO_URI: mongodb://mongo:27017/dioptra
-      METRICS_ENGINE_URL: "http://metrics-engine:4006"
+      METRICS_ENGINE_URL: "http://analytics:4006"
       PYTHONUNBUFFERED: true
     ports:
       - "8001:8001"
@@ -121,6 +124,7 @@ services:
       replicas: 1
     restart: always
     env_file:
+      - .env.example
       - .env
     environment:
       REDIS_HOST: redis
@@ -129,7 +133,7 @@ services:
       MONGO_URI: mongodb://mongo:27017/dioptra
       KAFKA_BOOTSTRAP_SERVER_URIS: "localhost:9092"
       DRUID_ENDPOINT: "http://host.docker.internal:8888"
-      METRICS_ENGINE_URL: "http://metrics-engine:4006"
+      METRICS_ENGINE_URL: "http://analytics:4006"
       FRONTEND_URL: http://frontend:4005
       PYTHONUNBUFFERED: true
     networks:
@@ -153,6 +157,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
+      - .env.example
       - .env
     environment:
       ENVIRONMENT: "local-dev"
@@ -160,6 +165,7 @@ services:
       POSTGRES_ECHO: true
       AWS_LAMBDA_FUNCTION_TIMEOUT: 900
       AWS_DEFAULT_REGION: us-west-2
+      OVERRIDE_POSTGRES_ORG_ID: 647cf6e64a781673194b7299
     networks:
       - dioptra-net
     volumes:
@@ -173,6 +179,7 @@ services:
     ports:
       - "5432:5432"
     env_file:
+      - .env.example
       - .env
     environment:
       POSTGRES_DB: dioptra
