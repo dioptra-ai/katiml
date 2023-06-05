@@ -6,6 +6,7 @@
     <a href="https://dioptra.ai">Website</a> •
     <a href="https://dioptra.gitbook.io/dioptra-doc/EIKhoPaxsbOt062jkPon/">Docs</a> •
     <a href="https://app.dioptra.ai/register">Try it Now</a>
+    <a href="https://join.slack.com/t/dioptracommunity/shared_invite/zt-1wepy2rcy-pg1YlMdhT0kz8X_evxteSA">Slack community</a>
 </p>
 
 <p align="center">
