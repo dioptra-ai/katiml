@@ -43,7 +43,6 @@ services:
       AWS_S3_CUSTOMER_BUCKET: "dioptra-client-data"
       AWS_S3_CUSTOMER_BUCKET_REGION: "us-east-2"
       AWS_INGESTION_STATE_MACHINE_ARN: arn:aws:states:us-east-2:641017132295:stateMachine:IngestionStateMachine-yexI4QkB6EnE
-      OVERRIDE_POSTGRES_ORG_ID: 647cf6e64a781673194b7299
     ports:
       - '4004:4004'
     networks:
@@ -108,7 +107,6 @@ services:
       POSTGRES_ECHO: true
       AWS_LAMBDA_FUNCTION_TIMEOUT: 900
       AWS_DEFAULT_REGION: us-west-2
-      OVERRIDE_POSTGRES_ORG_ID: 647cf6e64a781673194b7299
     networks:
       - dioptra-net
     volumes:
