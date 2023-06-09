@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   mongo:
-    image: arm64v8/mongo:6.0.2
+    image: mongo:6.0.2
     restart: always
     ports:
       - "27017:27017"
@@ -10,7 +10,7 @@ services:
       - dioptra-net
 
   mongo-cache:
-    image: arm64v8/mongo:6.0.2 # Matches the helm chart app version
+    image: mongo:6.0.2
     restart: always
     expose:
       - "27017"
