@@ -25,6 +25,8 @@
 
 # Start the service
 
+**Mac OS and Linux:**
+
 1. Clone this repo
     ```bash
     git clone --recurse-submodules git@github.com:dioptra-ai/katiml.git
@@ -48,7 +50,34 @@
 6. Select all datapoints and add them to a new dataset
 7. From http://localhost:4004/data-lake, Run the embedding analysis
 
+**Windows:**
 
+1. Clone this repo
+    ```bash
+    git clone --recurse-submodules git@github.com:dioptra-ai/katiml.git
+    ```
+
+2. Start all services with docker-compose
+    ```bash
+    cd katiml
+    type nul > .env
+    docker compose up --build
+    ```
+3. If you're starting for the first time, run the schema migration
+    ```bash
+    cd services/ingestion/schemas/pgsql
+    virtualenv .venv 
+    .venv/Scripts/activate 
+    pip install -r requirements.txt
+    alembic upgrade head
+    ```
+4. Visit http://localhost:4004/ with the following default credentials
+    * username: `admin@dioptra.ai`
+    * password: `password`
+5. Upload the [example data](./data/sample_dataset.json) to the lake
+6. Select all datapoints and add them to a new dataset
+7. From http://localhost:4004/data-lake, Run the embedding analysis
+   
 # Querying the lake
 
 1. Install the SDK
