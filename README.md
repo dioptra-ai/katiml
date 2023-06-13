@@ -44,10 +44,9 @@
 4. Visit http://localhost:4004/ with the following default credentials
     * username: `admin@dioptra.ai`
     * password: `password`
-5. Upload the [example data](./data/sample_dataset.json) to the lake
+5. Click on the "Load Demo Data" button.
 6. Select all datapoints and add them to a new dataset
 7. From http://localhost:4004/data-lake, Run the embedding analysis
-
 
 # Querying the lake
 
