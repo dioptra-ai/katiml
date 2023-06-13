@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-    <img src="./img/front_page.png" />
+    <img src="./img/front_page.gif" />
 </p>
 
 
