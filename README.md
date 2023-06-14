@@ -25,12 +25,15 @@
 
 # Start KatiML
 
-1. Install docker-compose: https://docs.docker.com/compose/install/
-1. Clone this repo
+1. Prerequisites:
+   1. docker-compose: https://docs.docker.com/compose/install/
+   2. Python: https://www.python.org/downloads/
+   3. Pip: https://pip.pypa.io/en/stable/installation/
+2. Clone this repo
     ```bash
     git clone --recurse-submodules git@github.com:dioptra-ai/katiml.git
     ```
-1. Start all services with the startup script
+3. Start all services with the startup script
     ```bash
     # Linux / MacOS
     ./startup.sh
@@ -40,11 +43,11 @@
     # Windows
     ./startup.cmd
     ```
-1. Visit http://localhost:4004/ with the following default credentials
+4. Visit http://localhost:4004/ with the following default credentials
     * username: `admin@dioptra.ai`
     * password: `password`
-1. Click on the "Load Demo Data" button (this might take a minute or two).
-1. When the data is loaded, run the embeddings analysis.
+5. Click on the "Load Demo Data" button (this might take a minute or two).
+6. When the data is loaded, run the embeddings analysis.
 
 # Querying the lake
 
