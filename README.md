@@ -23,30 +23,28 @@
 </p>
 
 
-# Start the service
+# Start KatiML
 
+1. Install docker-compose: https://docs.docker.com/compose/install/
 1. Clone this repo
     ```bash
     git clone --recurse-submodules git@github.com:dioptra-ai/katiml.git
     ```
-2. Start all services with docker-compose
+1. Start all services with the startup script
     ```bash
-    cd katiml
-    touch .env
-    docker compose up --build
+    # Linux / MacOS
+    ./startup.sh
     ```
-3. If you're starting for the first time, run the schema migration
+
     ```bash
-    cd services/ingestion/schemas/pgsql
-    virtualenv .venv && source .venv/bin/activate && pip install -r requirements.txt
-    alembic upgrade head
+    # Windows
+    ./startup.cmd
     ```
-4. Visit http://localhost:4004/ with the following default credentials
+1. Visit http://localhost:4004/ with the following default credentials
     * username: `admin@dioptra.ai`
     * password: `password`
-5. Click on the "Load Demo Data" button.
-6. Select all datapoints and add them to a new dataset
-7. From http://localhost:4004/data-lake, Run the embedding analysis
+1. Click on the "Load Demo Data" button (this might take a minute or two).
+1. When the data is loaded, run the embeddings analysis.
 
 # Querying the lake
 
